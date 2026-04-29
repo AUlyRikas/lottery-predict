@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>路虽远，行则将至！ · 澳门六合彩AI预测</title>
+    <style>
+        * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif; }
+        body { background: #f0f2f5; margin: 0; padding: 2vh 2vw; color: #1e293b; min-height: 100vh; }
+        .container { width: 90%; max-width: 1400px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 1rem; }
+        .header h1 { 
+            font-size: clamp(1.2rem, 5vw, 1.8rem); 
+            font-family: 'KaiTi', '华文行书', 'Microsoft YaHei', cursive;
+            font-weight: bold;
+            color: #800020;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            margin: 0 0 0.2rem 0;
+            letter-spacing: 2px;
+        }
+        .header p { color: #475569; font-size: 0.7rem; }
+        
+        .card { background: white; border-radius: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 0.8rem 1rem; margin-bottom: 1rem; border: 1px solid #eef2f6; }
+        .card-title { font-size: 0.9rem; font-weight: 600; border-left: 4px solid #eab308; padding-left: 0.8rem; margin-top: 0; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: space-between; }
+        .badge { background: #eef2ff; color: #1e3a8a; font-size: 0.6rem; border-radius: 40px; padding: 2px 8px; font-weight: normal; }
+        
+        .nav-btn { background: #e2e8f0; color: #1e293b; border: none; padding: 0.25rem 0.7rem; border-radius: 40px; font-size: 0.65rem; cursor: pointer; }
+        .nav-btn:hover { background: #cbd5e1; }
+        
+        .monitor-control { display: flex; align-items: center; gap: 8px; background: #f1f5f9; padding: 0.15rem 0.6rem; border-radius: 60px; }
+        .toggle-switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: 0.3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: 0.3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #3b82f6; }
+        input:checked + .slider:before { transform: translateX(20px); }
+        .monitor-status { font-size: 0.65rem; font-weight: 500; }
+        .last-check { font-size: 0.55rem; color: #5b6e8c; }
+        
+        .live-container { background: #f8fafc; border-radius: 1rem; padding: 0.5rem; text-align: center; }
+        .live-balls-wrapper { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 0.5rem; padding: 0.3rem 0; }
+        .live-ball-item { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
+        .live-ball { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 800; font-size: 1.2rem; box-shadow: 0 4px 10px -4px rgba(0,0,0,0.2), inset 0 -2px 0 rgba(0,0,0,0.1), inset 0 2px 3px rgba(255,255,255,0.6); color: white; text-shadow: 0 1px 1px rgba(0,0,0,0.4); position: relative; }
+        .live-ball::after { content: ""; position: absolute; top: 8%; left: 18%; width: 22%; height: 22%; background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 80%); border-radius: 50%; }
+        .live-zodiac { font-size: 0.85rem; font-weight: 700; background: #eef2ff; padding: 0.2rem 0.6rem; border-radius: 30px; color: #1e293b; border: 1px solid #cbd5e1; min-width: 50px; text-align: center; }
+        .live-special-plus { font-size: 1.2rem; font-weight: bold; color: #a855f7; margin: 0 0.2rem; display: inline-flex; align-items: center; background: #f1f5f9; padding: 0 0.4rem; border-radius: 40px; }
+        .expect-number { font-size: 0.9rem; font-weight: 700; margin: 0.2rem 0; color: #0f172a; }
+        .info-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 0.3rem; }
+        .info-tag { background: #f1f5f9; padding: 0.15rem 0.6rem; border-radius: 30px; font-size: 0.6rem; color: #1e293b; }
+        
+        .two-columns { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .column { flex: 1; min-width: 280px; }
+        
+        .predict-card { background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); border-radius: 1rem; padding: 0.8rem; border: 1px solid #fde68a; }
+        .predict-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; color: #92400e; text-align: center; }
+        .predict-subtitle { font-size: 0.6rem; color: #92400e; text-align: center; margin-bottom: 0.5rem; }
+        
+        .balls-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.4rem;
+            justify-items: center;
+            align-items: center;
+            margin: 0.5rem 0;
+        }
+        .predict-ball { 
+            width: 45px; 
+            height: 45px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border-radius: 50%; 
+            font-weight: 800; 
+            font-size: 1rem; 
+            box-shadow: 0 4px 8px -3px rgba(0,0,0,0.2), inset 0 -2px 0 rgba(0,0,0,0.1), inset 0 2px 3px rgba(255,255,255,0.6); 
+            color: white; 
+            text-shadow: 0 1px 1px rgba(0,0,0,0.4); 
+            position: relative;
+        }
+        .predict-ball::after { content: ""; position: absolute; top: 8%; left: 18%; width: 22%; height: 22%; background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 80%); border-radius: 50%; }
+        
+        .ball-red { background: radial-gradient(circle at 30% 30%, #ef4444, #b91c1c); }
+        .ball-blue { background: radial-gradient(circle at 30% 30%, #3b82f6, #1d4ed8); }
+        .ball-green { background: radial-gradient(circle at 30% 30%, #22c55e, #15803d); }
+        
+        .info-labels { display: flex; flex-wrap: wrap; gap: 0.3rem; justify-content: center; margin-top: 0.3rem; }
+        .zodiac-tag { display: inline-block; background: #fef3c7; padding: 0.1rem 0.5rem; border-radius: 30px; font-size: 0.65rem; color: #92400e; }
+        .kill-tag { background: #fee2e2; color: #991b1b; }
+        .range-tag { background: #dbeafe; color: #1e40af; }
+        
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.2rem;
+            margin-top: 0.3rem;
+        }
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            padding: 0.1rem 0.3rem;
+            border-bottom: 1px solid #fde68a;
+        }
+        
+        .history-number-cell { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; align-items: center; }
+        .history-ball-item { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
+        .history-ball { width: 36px; height: 36px; font-size: 0.85rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; color: white; text-shadow: 0 1px 1px rgba(0,0,0,0.3); box-shadow: 0 2px 5px rgba(0,0,0,0.1), inset 0 1px 2px rgba(255,255,255,0.5); position: relative; }
+        .history-ball::after { content: ""; position: absolute; top: 8%; left: 18%; width: 20%; height: 20%; background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 80%); border-radius: 50%; }
+        .history-ball-red { background: radial-gradient(circle at 30% 30%, #ef4444, #b91c1c); }
+        .history-ball-blue { background: radial-gradient(circle at 30% 30%, #3b82f6, #1d4ed8); }
+        .history-ball-green { background: radial-gradient(circle at 30% 30%, #22c55e, #15803d); }
+        .history-zodiac { font-size: 0.75rem; font-weight: 600; background: #eef2ff; padding: 2px 6px; border-radius: 20px; color: #1e293b; white-space: nowrap; }
+        
+        .history-table-wrapper { overflow-x: auto; border-radius: 16px; max-height: 380px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.7rem; min-width: 420px; }
+        th, td { padding: 0.4rem 0.2rem; text-align: center; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; font-weight: 600; color: #1e293b; position: sticky; top: 0; }
+        .load-more-btn { margin-top: 0.5rem; text-align: center; }
+        .load-more-btn button { padding: 0.3rem 1rem; background: #3b82f6; border-radius: 40px; border: none; color: white; cursor: pointer; font-size: 0.7rem; }
+        .loading, .error-msg { text-align: center; padding: 1rem; background: #f8fafc; border-radius: 20px; color: #475569; font-size: 0.75rem; }
+        .cors-guide { background: #fef9e3; border-left: 4px solid #eab308; padding: 0.5rem 1rem; border-radius: 16px; margin-top: 0.8rem; font-size: 0.65rem; }
+        footer { text-align: center; font-size: 0.55rem; color: #8ba0bc; margin-top: 1rem; }
+        .date-tag-mini { background: #e2e8f0; border-radius: 16px; padding: 2px 8px; font-size: 0.6rem; color: #1f2937; margin-left: 6px; }
+        
+        .btn-bizhong {
+            background: linear-gradient(135deg, #991b1b, #7f1d1d);
+            color: #ffd700;
+            border: none;
+            padding: 0.3rem 1rem;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-bizhong:hover {
+            transform: scale(1.02);
+            background: linear-gradient(135deg, #7f1d1d, #5e1616);
+        }
+        
+        @media (max-width: 768px) { .container { width: 95%; } .predict-ball { width: 38px; height: 38px; font-size: 0.85rem; } .balls-grid { gap: 0.3rem; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>路虽远，行则将至！</h1>
+        <p>自动监控 | 特别号码紫色加号 | AI智能分析预测 | 每日自动更新预测结果</p>
+    </div>
+
+    <div class="card-title">
+        <span>实时开奖</span>
+        <a href="挑码助手.html" style="display: inline-flex; align-items: center; gap: 5px; text-decoration: none; background: #f1f5f9; padding: 4px 12px; border-radius: 40px; font-size: 0.7rem; font-weight: 500; color: #1e293b;">
+            挑码助手
+        </a>
+        <div class="monitor-control">
+            <span class="monitor-status">自动监控</span>
+            <label class="toggle-switch"><input type="checkbox" id="autoMonitorToggle" checked><span class="slider"></span></label>
+            <span id="lastCheckTime" class="last-check">最后检查: --:--:--</span>
+        </div>
+    </div>
+    <div id="liveResultArea" class="live-container"><div class="loading">加载最新开奖中...</div></div>
+
+    <div class="two-columns">
+        <div class="column">
+            <div class="card">
+                <div class="card-title"><span>下期预测</span><span id="refreshPredictBtn" class="btn-bizhong">必中</span></div>
+                <div id="predictResultArea"><div class="predict-card"><div class="predict-title">加载预测数据中...</div><div style="color: #64748b; font-size: 0.7rem; text-align: center;">正在读取AI预测结果</div></div></div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="card">
+                <div class="card-title"><span>预测历史记录</span><div><button id="prevHistoryBtn" class="nav-btn">上一期</button><button id="nextHistoryBtn" class="nav-btn">下一期</button><span class="badge" id="historyPageInfo" style="margin-left: 5px;">0/0</span></div></div>
+                <div id="predictHistoryArea"><div style="color: #64748b; text-align: center; padding: 1rem;">暂无预测记录</div></div>
+                <div style="margin-top: 0.5rem; text-align: center;"><button id="clearHistoryBtn" class="nav-btn" style="background: #fee2e2; color: #991b1b;">清空所有历史</button></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">历史开奖记录<span class="badge" id="historyCountBadge">加载中...</span></div>
+        <div class="history-table-wrapper" id="historyWrapper"><div class="loading">加载历史中...</div></div>
+        <div class="load-more-btn" id="loadMoreBtnContainer" style="display: none;"><button id="loadMoreHistoryBtn">加载更多历史</button></div>
+    </div>
+
+    <div class="cors-guide" id="corsGuide" style="display: none;">无法加载数据？使用 VS Code Live Server 或运行 python -m http.server 8080</div>
+    <footer>数据来源 macaumarksix.com | 每3秒自动轮询 | AI智能分析预测 | 每日21:40后自动刷新预测</footer>
+</div>
+
+<script>
+    const LIVE_API = "https://macaumarksix.com/api/live2";
+    const HISTORY_API = "https://history.macaumarksix.com/history/macaujc2/y/2026";
+    const PREDICT_JSON = "prediction_result.json";
+
+    const redSet = new Set([1,2,7,8,12,13,18,19,23,24,29,30,34,35,40,45,46]);
+    const blueSet = new Set([3,4,9,10,14,15,20,25,26,31,36,37,41,42,47,48]);
+    const greenSet = new Set([5,6,11,16,17,21,22,27,28,32,33,38,39,43,44,49]);
+    const ZODIAC_LIST = ["马", "蛇", "龙", "兔", "虎", "牛", "鼠", "猪", "狗", "鸡", "猴", "羊"];
+
+    function getColorClass(num) { let n = parseInt(num); if (redSet.has(n)) return 'ball-red'; if (blueSet.has(n)) return 'ball-blue'; return 'ball-green'; }
+    function getHistoryColorClass(num) { let n = parseInt(num); if (redSet.has(n)) return 'history-ball-red'; if (blueSet.has(n)) return 'history-ball-blue'; return 'history-ball-green'; }
+    function getZodiacByNum(num, year) { let first = {2024:"龙",2025:"蛇",2026:"马"}[year]||"马"; let idx = (ZODIAC_LIST.indexOf(first) + (num-1)) % 12; return ZODIAC_LIST[idx]; }
+    
+    function renderLiveDraw(item) {
+        if (!item || !item.openCode) { document.getElementById('liveResultArea').innerHTML = '<div class="error-msg">暂无开奖数据</div>'; return; }
+        let codes = item.openCode.split(',').map(s=>s.trim());
+        let zodiacs = item.zodiac ? item.zodiac.split(',').map(z=>z.trim()) : [];
+        while(zodiacs.length < codes.length) zodiacs.push('?');
+        let balls = '';
+        for(let i=0;i<codes.length;i++){
+            balls += `<div class="live-ball-item"><div class="live-ball ${getColorClass(codes[i])}">${codes[i]}</div><div class="live-zodiac">${zodiacs[i]}</div></div>`;
+            if(i===5) balls += `<div class="live-special-plus">+</div>`;
+        }
+        document.getElementById('liveResultArea').innerHTML = `<div class="expect-number">期号 ${item.expect}</div><div class="live-balls-wrapper">${balls}</div><div class="info-row"><span class="info-tag">${item.openTime ? item.openTime.split(' ')[0] : '-'}</span><span class="info-tag">${item.type || '-'}</span></div>`;
+    }
+
+    function buildHistoryBalls(openCodeStr, zodiacStr) {
+        if(!openCodeStr) return '<span>无数据</span>';
+        let codes = openCodeStr.split(',').map(s=>s.trim());
+        let zodiacs = zodiacStr ? zodiacStr.split(',').map(z=>z.trim()) : [];
+        while(zodiacs.length < codes.length) zodiacs.push('?');
+        let items = [];
+        for(let i=0;i<codes.length;i++) items.push(`<div class="history-ball-item"><div class="history-ball ${getHistoryColorClass(codes[i])}">${codes[i]}</div><div class="history-zodiac">${zodiacs[i]}</div></div>`);
+        if(items.length>=7) return `<div class="history-number-cell">${items.slice(0,6).join('')}<div class="live-special-plus" style="font-size:0.9rem;">+</div>${items.slice(6).join('')}</div>`;
+        return `<div class="history-number-cell">${items.join('')}</div>`;
+    }
+
+    let predictHistory = [], currentHistoryIndex = 0;
+    let currentPredictionData = null;
+    let lastAutoRefreshDate = null; // 记录当天是否已自动刷新
+    
+    function getTodayStr() { return new Date().toLocaleDateString('zh-CN', {year:'numeric', month:'2-digit', day:'2-digit'}).replace(/\//g,'-'); }
+    
+    function getCurrentBeijingTime() {
+        const now = new Date();
+        return now;
+    }
+    
+    // 检查是否需要自动刷新预测（21:40之后且今天还没刷新过）
+    function shouldAutoRefresh() {
+        const now = getCurrentBeijingTime();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const today = getTodayStr();
+        
+        // 21:40 之后，且今天还没自动刷新过
+        if ((hours > 21 || (hours === 21 && minutes >= 40)) && lastAutoRefreshDate !== today) {
+            return true;
+        }
+        return false;
+    }
+    
+    async function loadPredictionFromJson(isManual = false) {
+        try {
+            const response = await fetch(PREDICT_JSON + '?t=' + Date.now());
+            if (!response.ok) throw new Error('加载失败');
+            const data = await response.json();
+            
+            // 检查数据是否真的有更新（期号不同）
+            const isNewData = !currentPredictionData || currentPredictionData.predict_qihao !== data.predict_qihao;
+            
+            currentPredictionData = data;
+            
+            const historyRecord = {
+                dateKey: getTodayStr(),
+                predictQihao: data.predict_qihao,
+                basedQihao: data.based_qihao,
+                numbers: data.numbers,
+                numbers_by_zodiac: data.numbers_by_zodiac,
+                tail_scores: data.tail_scores,
+                zodiac_scores: data.zodiac_scores,
+                dynamic_tails: data.dynamic_tails,
+                range_zodiacs: data.range_zodiacs,
+                key_zodiacs: data.key_zodiacs,
+                kill_zodiacs: data.kill_zodiacs,
+                time: data.predict_time
+            };
+            
+            const existingIndex = predictHistory.findIndex(rec => rec.dateKey === historyRecord.dateKey);
+            if (existingIndex !== -1) {
+                predictHistory[existingIndex] = historyRecord;
+            } else {
+                predictHistory.unshift(historyRecord);
+            }
+            predictHistory.sort((a,b) => b.dateKey.localeCompare(a.dateKey));
+            currentHistoryIndex = 0;
+            savePredictHistory();
+            renderPredictionFromData(historyRecord);
+            renderPredictHistory();
+            
+            // 如果是自动刷新且数据有更新，在控制台记录
+            if (!isManual && isNewData) {
+                console.log('预测数据已自动更新:', data.predict_qihao);
+            }
+            return true;
+        } catch(e) {
+            console.warn('加载预测数据失败', e);
+            if (!document.getElementById('predictResultArea').innerHTML.includes('预测数据加载中')) {
+                document.getElementById('predictResultArea').innerHTML = '<div class="predict-card"><div class="predict-title">预测数据加载中</div><div style="color: #64748b; font-size: 0.7rem; text-align: center;">等待AI预测结果生成...</div></div>';
+            }
+            return false;
+        }
+    }
+    
+    function renderPredictionFromData(p) {
+        if(!p) return;
+        
+        let grid = '<div class="balls-grid">';
+        for(let i=0;i<12;i++){ 
+            let num = p.numbers[i];
+            if(num) grid += `<div class="predict-ball ${getColorClass(num)}">${num}</div>`;
+        }
+        grid += '</div>';
+        
+        let tailHtml = '<div class="score-grid">';
+        if(p.tail_scores && p.tail_scores.length) {
+            p.tail_scores.slice(0,10).forEach(s => {
+                tailHtml += `<div class="score-item"><span>尾数 ${s.tail}</span><span>${s.score}</span></div>`;
+            });
+        }
+        tailHtml += '</div>';
+        
+        let zodiacHtml = '<div class="score-grid">';
+        if(p.zodiac_scores && p.zodiac_scores.length) {
+            p.zodiac_scores.slice(0,12).forEach(s => {
+                zodiacHtml += `<div class="score-item"><span>${s.zodiac}</span><span>${s.score}</span></div>`;
+            });
+        }
+        zodiacHtml += '</div>';
+        
+        let groupHtml = '';
+        if(p.numbers_by_zodiac) {
+            for(let [z, arr] of Object.entries(p.numbers_by_zodiac)) {
+                groupHtml += `<span class="zodiac-tag range-tag">${z}: ${arr.join(',')}</span>`;
+            }
+        }
+        
+        let rangeHtml = '';
+        if(p.range_zodiacs && p.range_zodiacs.length) {
+            rangeHtml = `<div class="info-labels"><span class="zodiac-tag" style="background:#dbeafe;">大范围生肖: ${p.range_zodiacs.join('、')}</span></div>`;
+        }
+        
+        let keyHtml = '';
+        if(p.key_zodiacs && p.key_zodiacs.length) {
+            keyHtml = `<div class="info-labels"><span class="zodiac-tag range-tag">重点候选生肖: ${p.key_zodiacs.join('、')}</span>`;
+        }
+        if(p.kill_zodiacs && p.kill_zodiacs.length) {
+            keyHtml += `<span class="zodiac-tag kill-tag">杀肖: ${p.kill_zodiacs.join('、')}</span></div>`;
+        }
+        
+        let tailInfo = '';
+        if(p.dynamic_tails && p.dynamic_tails.length) {
+            tailInfo = `<div class="info-labels"><span class="zodiac-tag" style="background:#fef3c7;">动态尾数: ${p.dynamic_tails.join('、')}</span></div>`;
+        }
+        
+        document.getElementById('predictResultArea').innerHTML = `<div class="predict-card">
+            <div class="predict-title">预测下一期: ${p.predictQihao}</div>
+            <div class="predict-subtitle">基于期号: ${p.basedQihao} | ${p.time || ''}</div>
+            ${grid}
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                <div style="flex: 1; min-width: 120px;"><div style="font-size:0.6rem; font-weight:bold; text-align:center;">尾数投票</div>${tailHtml}</div>
+                <div style="flex: 1; min-width: 120px;"><div style="font-size:0.6rem; font-weight:bold; text-align:center;">生肖投票</div>${zodiacHtml}</div>
+            </div>
+            ${rangeHtml}
+            ${keyHtml}
+            <div class="info-labels">${groupHtml}</div>
+            ${tailInfo}
+        </div>`;
+    }
+    
+    function renderSingleHistoryRecord(item, idx, total) {
+        if(!item) { 
+            document.getElementById('predictHistoryArea').innerHTML = '<div style="color:#64748b;text-align:center;padding:1rem;">暂无预测记录</div>'; 
+            document.getElementById('historyPageInfo').innerText='0/0'; 
+            return; 
+        }
+        
+        let grid = '<div class="balls-grid">';
+        for(let i=0;i<12;i++){ 
+            let num = item.numbers[i];
+            if(num) grid += `<div class="predict-ball ${getColorClass(num)}">${num}</div>`;
+        }
+        grid += '</div>';
+        
+        let groupHtml = '';
+        if(item.numbers_by_zodiac) {
+            for(let [z, arr] of Object.entries(item.numbers_by_zodiac)) {
+                groupHtml += `<span class="zodiac-tag range-tag">${z}: ${arr.join(',')}</span>`;
+            }
+        }
+        
+        let rangeHtml = '';
+        if(item.range_zodiacs && item.range_zodiacs.length) {
+            rangeHtml = `<div class="info-labels"><span class="zodiac-tag" style="background:#dbeafe;">大范围生肖: ${item.range_zodiacs.join('、')}</span></div>`;
+        }
+        
+        let keyHtml = '';
+        if(item.key_zodiacs && item.key_zodiacs.length) {
+            keyHtml = `<div class="info-labels"><span class="zodiac-tag range-tag">重点候选生肖: ${item.key_zodiacs.join('、')}</span>`;
+        }
+        if(item.kill_zodiacs && item.kill_zodiacs.length) {
+            keyHtml += `<span class="zodiac-tag kill-tag">杀肖: ${item.kill_zodiacs.join('、')}</span></div>`;
+        }
+        
+        let tailInfo = '';
+        if(item.dynamic_tails && item.dynamic_tails.length) {
+            tailInfo = `<div class="info-labels"><span class="zodiac-tag" style="background:#fef3c7;">动态尾数: ${item.dynamic_tails.join('、')}</span></div>`;
+        }
+        
+        let tailHtml = '<div class="score-grid">';
+        if(item.tail_scores && item.tail_scores.length) {
+            item.tail_scores.slice(0,5).forEach(s => {
+                tailHtml += `<div class="score-item"><span>尾数 ${s.tail}</span><span>${s.score}</span></div>`;
+            });
+        }
+        tailHtml += '</div>';
+        
+        let zodiacHtml = '<div class="score-grid">';
+        if(item.zodiac_scores && item.zodiac_scores.length) {
+            item.zodiac_scores.slice(0,6).forEach(s => {
+                zodiacHtml += `<div class="score-item"><span>${s.zodiac}</span><span>${s.score}</span></div>`;
+            });
+        }
+        zodiacHtml += '</div>';
+        
+        document.getElementById('predictHistoryArea').innerHTML = `<div class="predict-card">
+            <div class="predict-title">预测期号: ${item.predictQihao}</div>
+            <div class="predict-subtitle">基于: ${item.basedQihao} | ${item.time || ''} ${item.dateKey ? `<span class="date-tag-mini">${item.dateKey}</span>` : ''}</div>
+            ${grid}
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                <div style="flex: 1; min-width: 100px;"><div style="font-size:0.55rem; font-weight:bold; text-align:center;">尾数投票</div>${tailHtml}</div>
+                <div style="flex: 1; min-width: 100px;"><div style="font-size:0.55rem; font-weight:bold; text-align:center;">生肖投票</div>${zodiacHtml}</div>
+            </div>
+            ${rangeHtml}
+            ${keyHtml}
+            <div class="info-labels">${groupHtml}</div>
+            ${tailInfo}
+        </div>`;
+        document.getElementById('historyPageInfo').innerText = `${idx+1}/${total}`;
+    }
+    
+    function renderPredictHistory() { 
+        let t = predictHistory.length; 
+        if(t===0){ 
+            document.getElementById('predictHistoryArea').innerHTML='<div style="color:#64748b;text-align:center;padding:1rem;">暂无预测记录，等待AI预测生成</div>'; 
+            document.getElementById('historyPageInfo').innerText='0/0'; 
+            return; 
+        } 
+        if(currentHistoryIndex<0) currentHistoryIndex=0; 
+        if(currentHistoryIndex>=t) currentHistoryIndex=t-1; 
+        renderSingleHistoryRecord(predictHistory[currentHistoryIndex], currentHistoryIndex, t); 
+    }
+    
+    function prevHistory() { if(predictHistory.length && currentHistoryIndex>0) { currentHistoryIndex--; renderSingleHistoryRecord(predictHistory[currentHistoryIndex], currentHistoryIndex, predictHistory.length); } }
+    function nextHistory() { if(predictHistory.length && currentHistoryIndex<predictHistory.length-1) { currentHistoryIndex++; renderSingleHistoryRecord(predictHistory[currentHistoryIndex], currentHistoryIndex, predictHistory.length); } }
+    function clearPredictHistory() { if(confirm('清空所有预测历史？')) { predictHistory = []; currentHistoryIndex = -1; savePredictHistory(); renderPredictHistory(); } }
+    
+    function savePredictHistory() { 
+        localStorage.setItem('lottery_predict_history_v2', JSON.stringify(predictHistory)); 
+    }
+    
+    function loadPredictHistory() { 
+        let s = localStorage.getItem('lottery_predict_history_v2'); 
+        if(s) try{ 
+            let parsed = JSON.parse(s);
+            if(Array.isArray(parsed)) predictHistory = parsed;
+            else predictHistory = [];
+        } catch(e){ predictHistory = []; }
+        currentHistoryIndex = predictHistory.length > 0 ? 0 : -1;
+        renderPredictHistory(); 
+    }
+
+    let currentLatestItem = null, monitorInterval = null, isMonitoring = true, fullHistoryList = [], currentDisplayCount = 50;
+    const toggle = document.getElementById('autoMonitorToggle'), historyWrapper = document.getElementById('historyWrapper'), loadMoreContainer = document.getElementById('loadMoreBtnContainer'), historyCountBadge = document.getElementById('historyCountBadge'), corsGuide = document.getElementById('corsGuide'), lastCheckSpan = document.getElementById('lastCheckTime');
+    function updateLastCheck() { lastCheckSpan.innerText = `最后检查: ${new Date().toLocaleTimeString('zh-CN',{hour12:false})}`; }
+    
+    async function loadHistory() {
+        historyWrapper.innerHTML = '<div class="loading">加载历史中...</div>';
+        try{
+            let resp = await fetch(HISTORY_API);
+            let json = await resp.json();
+            let arr = json?.data || (Array.isArray(json)?json:null);
+            if(arr && arr.length){
+                let map = new Map();
+                for(let item of arr) if(!map.has(item.expect)) map.set(item.expect, item);
+                fullHistoryList = Array.from(map.values()).sort((a,b)=>parseInt(b.expect)-parseInt(a.expect));
+                currentDisplayCount = Math.min(50, fullHistoryList.length);
+                renderHistory();
+                corsGuide.style.display = 'none';
+            } else historyWrapper.innerHTML = '<div class="error-msg">暂无历史数据</div>';
+        } catch(e){ historyWrapper.innerHTML = `<div class="error-msg">加载失败: ${e.message}</div>`; corsGuide.style.display = 'block'; }
+    }
+    
+    function renderHistory() {
+        if(!fullHistoryList.length){ historyWrapper.innerHTML='<div class="error-msg">暂无历史数据</div>'; loadMoreContainer.style.display='none'; historyCountBadge.innerText='0期'; return; }
+        let display = fullHistoryList.slice(0,currentDisplayCount);
+        historyCountBadge.innerText = `${display.length}/${fullHistoryList.length}期`;
+        let rows='';
+        for(let item of display) rows += `<tr><td style="font-weight:600;">${item.expect}</td><td style="font-size:0.65rem;">${item.openTime?item.openTime.split(' ')[0]:'-'}</td><td style="min-width:160px;">${buildHistoryBalls(item.openCode,item.zodiac)}<\/td></tr>`;
+        historyWrapper.innerHTML = `<table><thead><tr><th>期号</th><th>日期</th><th>号码+生肖</th></tr></thead><tbody>${rows}</tbody></table>`;
+        loadMoreContainer.style.display = currentDisplayCount < fullHistoryList.length ? 'block' : 'none';
+    }
+    
+    function loadMoreHistory() { if(fullHistoryList.length){ currentDisplayCount = Math.min(currentDisplayCount+30, fullHistoryList.length); renderHistory(); } }
+    function parseLive(data){ if(Array.isArray(data)&&data.length) return data[0]; if(data?.data?.length) return data.data[0]; if(data?.result===true&&data.data?.length) return data.data[0]; return data?.expect?data:null; }
+    
+    // 检查开奖数据是否有更新，如有则自动刷新预测
+    let lastExpect = null;
+    async function poll() {
+        if(!isMonitoring) return;
+        try{
+            let ctrl = new AbortController();
+            let tid = setTimeout(()=>ctrl.abort(),8000);
+            let resp = await fetch(LIVE_API,{signal:ctrl.signal});
+            clearTimeout(tid);
+            if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            let data = await resp.json();
+            corsGuide.style.display='none';
+            let item = parseLive(data);
+            if(!item?.openCode) return;
+            updateLastCheck();
+            
+            let isNew = (!currentLatestItem || currentLatestItem.expect !== item.expect);
+            
+            // 开奖期号变化时，自动刷新预测数据
+            if (isNew && lastExpect !== null) {
+                console.log('开奖数据已更新，自动刷新预测');
+                await loadPredictionFromJson(false);
+                // 重置自动刷新标记，允许新一轮自动刷新
+                lastAutoRefreshDate = null;
+            }
+            lastExpect = item.expect;
+            
+            if(isNew && currentLatestItem){
+                currentLatestItem = item;
+                renderLiveDraw(item);
+                await loadHistory();
+            } else if(!currentLatestItem){
+                currentLatestItem = item;
+                renderLiveDraw(item);
+            }
+            
+            // 定时检查是否需要自动刷新（21:40后自动刷新预测）
+            if (shouldAutoRefresh()) {
+                console.log('21:40已过，自动刷新预测数据');
+                await loadPredictionFromJson(false);
+                lastAutoRefreshDate = getTodayStr();
+            }
+        } catch(e){ console.warn(e); updateLastCheck(); }
+    }
+    
+    function startMonitor(){ if(monitorInterval) clearInterval(monitorInterval); monitorInterval = setInterval(()=>{ if(isMonitoring) poll(); },3000); }
+    
+    function bindEvents(){
+        toggle.addEventListener('change',(e)=>{ isMonitoring=e.target.checked; if(isMonitoring){ startMonitor(); poll(); } else { if(monitorInterval) clearInterval(monitorInterval); monitorInterval=null; } });
+        if(toggle.checked){ isMonitoring=true; startMonitor(); }
+        document.getElementById('loadMoreHistoryBtn')?.addEventListener('click',loadMoreHistory);
+        document.getElementById('clearHistoryBtn')?.addEventListener('click',clearPredictHistory);
+        document.getElementById('prevHistoryBtn')?.addEventListener('click',prevHistory);
+        document.getElementById('nextHistoryBtn')?.addEventListener('click',nextHistory);
+        document.getElementById('refreshPredictBtn')?.addEventListener('click', () => loadPredictionFromJson(true));
+    }
+    
+    async function init(){ 
+        loadPredictHistory(); 
+        await loadPredictionFromJson(false);
+        await loadHistory(); 
+        await poll(); 
+        bindEvents();
+        // 每分钟检查一次是否需要自动刷新
+        setInterval(async () => {
+            if (shouldAutoRefresh()) {
+                console.log('定时检查：21:40已过，自动刷新预测');
+                await loadPredictionFromJson(false);
+                lastAutoRefreshDate = getTodayStr();
+            }
+        }, 60000);
+    }
+    init();
+</script>
+</body>
+</html>
