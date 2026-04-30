@@ -2,7 +2,7 @@ name: 彩票预测自动更新
 
 on:
   schedule:
-    - cron: '0 1,13 * * *'
+    - cron: '40 13 * * *'
   workflow_dispatch:
 
 jobs:
