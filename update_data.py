@@ -1,10 +1,11 @@
-﻿# update_data.py - 数据更新模块
+# update_data.py - 数据更新模块
 import json
 import os
 import urllib.request
 from datetime import datetime
 
-DATA_DIR = r"D:\lottery_ai\mark6"
+# 使用相对路径，兼容 GitHub Actions
+DATA_DIR = os.path.join(os.path.dirname(__file__), "mark6")
 
 def fetch_2026_data():
     url = "https://history.macaumarksix.com/history/macaujc2/y/2026"
@@ -34,6 +35,8 @@ def save_local(file_path, data_list):
         "result": True, "message": "OK", "code": 200,
         "data": data_list, "timestamp": int(datetime.now().timestamp() * 1000)
     }
+    # 确保目录存在
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
     if os.path.exists(file_path):
         backup_path = file_path + ".bak"
         try:
