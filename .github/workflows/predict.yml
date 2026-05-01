@@ -22,7 +22,7 @@ jobs:
       run: pip install requests
     
     - name: 更新本地数据
-      run: python -c "import sys; sys.path.insert(0, '.'); from shuju_loader import update_year_data; update_year_data(2026)"
+      run: python -c "from shuju_loader import update_year_data; update_year_data(2026)"
     
     - name: 运行预测
       run: python combine_predict.py
