@@ -2,8 +2,20 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>路虽远，行则将至！ · 澳门六合彩AI预测</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <title>路虽远,行则将至!</title>
+    
+    <!-- 密码验证 -->
+    <script>
+        var SITE_PASSWORD = '5121';  // 修改这里的密码
+        var pwd = prompt('请输入访问密码：');
+        if (pwd !== SITE_PASSWORD) {
+            document.body.innerHTML = '<div style="text-align:center; padding:100px; font-size:18px; color:#999;">密码错误，无法访问</div>';
+            throw new Error('密码错误');
+        }
+    </script>
+    
+    <!-- 后面是原来的样式和代码 -->
     <style>
         * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif; }
         body { background: #f0f2f5; margin: 0; padding: 2vh 2vw; color: #1e293b; min-height: 100vh; }
