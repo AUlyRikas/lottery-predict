@@ -1,1 +1,1 @@
-# lottery-predict
+Lottery Predict System
